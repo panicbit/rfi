@@ -39,7 +39,7 @@ impl Client {
 
         request
             .header(UserAgent::new(USER_AGENT))
-            // .header(Accept(vec!["application/vnd.github.v4+json".parse().unwrap()]))
+            .header(Accept(vec!["application/vnd.github.v4+json".parse().unwrap()]))
             .header(Authorization(self.token.clone()))
             .json(&GqlQuery { query: query.as_ref(), variables });
         
