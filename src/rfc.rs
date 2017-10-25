@@ -5,13 +5,14 @@ use std::fs::{self, File};
 use std::io::Read;
 use regex::Regex;
 use errors::*;
-use github;
+use github::{self, State};
 
-#[derive(Debug)]
+#[derive(Debug,Serialize)]
 pub struct Rfc {
-    pub number: u32,
+    pub number: String,
     pub short_title: String,
     pub issues: Vec<github::Issue>,
+    pub state: State,
 }
 
 impl Rfc {
@@ -26,7 +27,8 @@ impl Rfc {
         let file_name = path.file_name().expect("file name").to_string_lossy().into_owned();
         let caps = FILE_NAME_RE.captures(&file_name)
             .ok_or_else(|| UnexpectedFileNameFormat(file_name.to_string()))?;
-        let number = caps[1].parse().chain_err(|| UnexpectedFileNameFormat(file_name.to_string()))?;
+        let number = caps[1].to_string();
+        let short_title = caps[2].to_string();
 
         let mut markdown = String::new();
         file.read_to_string(&mut markdown)?;
@@ -37,10 +39,16 @@ impl Rfc {
         let issues = Self::get_github_tickets(github, issues)
             .chain_err(|| format!("Couldn't fetch ticket info for RFC {}", number))?;
 
+        let state = issues.iter()
+            .find(|issue| issue.state() == State::Open)
+            .map(|_| State::Open)
+            .unwrap_or(State::Closed);
+
         Ok(Rfc {
             number,
-            short_title: caps[2].to_string(),
-            issues: issues,
+            short_title,
+            issues,
+            state
         })
     }
 

@@ -1,14 +1,16 @@
 use std::time::{SystemTime,Duration,UNIX_EPOCH};
-use reqwest::{self,Method,RequestBuilder};
+use reqwest::{self,Method,RequestBuilder,Body};
 use reqwest::header::{UserAgent,Accept,Authorization};
 
 pub use self::token::Token;
 pub use self::errors::*;
 
+use serde::Serialize;
+
 mod token;
 mod errors;
 
-const ROOT: &str = "https://api.github.com";
+const ROOT: &str = "https://api.github.com/graphql";
 const USER_AGENT: &str = "gh: panicbit/rfi";
 
 pub struct Client {
@@ -26,35 +28,57 @@ impl Client {
         }
     }
 
-    pub fn authenticated_request<S: AsRef<str>>(&self, method: Method, path: S) -> RequestBuilder {
-        let url = format!("{}/{}", ROOT, path.as_ref());
-        let mut request = self.client.request(method, &url);
+    pub fn authenticated_request<Q: AsRef<str>, V: Serialize>(&self, query: Q, variables: V) -> RequestBuilder {
+        #[derive(Serialize)]
+        struct GqlQuery<'a, V: Serialize> {
+            query: &'a str,
+            variables: V,
+        }
+
+        let mut request = self.client.post(ROOT);
 
         request
             .header(UserAgent::new(USER_AGENT))
-            .header(Accept(vec!["application/vnd.github.v3+json".parse().unwrap()]))
-            .header(Authorization(self.token.clone()));
+            // .header(Accept(vec!["application/vnd.github.v4+json".parse().unwrap()]))
+            .header(Authorization(self.token.clone()))
+            .json(&GqlQuery { query: query.as_ref(), variables });
         
         request
     }
 
     pub fn get_issue(&self, owner: &str, repo: &str, number: u32) -> Result<Issue> {
-        let path = format!("repos/{owner}/{repo}/issues/{number}",
-            owner = owner,
-            repo = repo,
-            number = number,
-        );
-        let mut req = self.authenticated_request(Method::Get, path);
+        #[derive(Serialize)]
+        struct Variables<'a> {
+            owner: &'a str,
+            repo: &'a str,
+            number: u32,
+        }
+
+        let mut req = self.authenticated_request(r#"
+            query($owner: String!, $repo: String!, $number: Int!) {
+                repository(owner: $owner, name: $repo) {
+                    issue: issueOrPullRequest(number: $number) {
+                        ...on PullRequest { number title state url }
+                        ... on Issue { number title state url }
+                    }
+                }
+            }
+        "#, Variables { owner, repo, number });
+
         let mut resp = req.send()?;
+
         // use std::io::Read;
         // let mut body = String::new();
         // resp.read_to_string(&mut body).unwrap();
         // println!("{}", body);
 
-        let issue = resp.json::<Issue>()
+        let gql_resp = resp.json::<GqlResponse<GqlRepository<GqlIssue>>>()
             .chain_err(|| ErrorKind::Unknown(req, resp))?;
 
-        Ok(issue)
+        match gql_resp {
+            GqlResponse::Errors { errors } => bail!(ErrorKind::Gql(errors)),
+            GqlResponse::Data { data } => Ok(data.repository.issue)
+        }
     }
 
     // pub fn get_pull_request(&self, owner: &str, repo: &str, number: u32) -> Result<PullRequest> {
@@ -75,20 +99,15 @@ impl Client {
     // }
 }
 
-#[derive(Deserialize,Debug)]
+#[derive(Deserialize,Serialize,Debug)]
 pub struct Issue {
     number: u32,
     title: String,
     state: State,
     url: String,
-    pull_request: Option<PullRequest>,
 }
 
 impl Issue {
-    pub fn is_pull_request(&self) -> bool {
-        self.pull_request.is_some()
-    }
-
     pub fn state(&self) -> State {
         self.state
     }
@@ -98,11 +117,8 @@ impl Issue {
     }
 }
 
-#[derive(Deserialize,Debug)]
-struct PullRequest {}
-
-#[derive(Deserialize,Debug,PartialEq,Copy,Clone)]
-#[serde(rename_all="lowercase")]
+#[derive(Deserialize,Serialize,Debug,PartialEq,Copy,Clone)]
+#[serde(rename_all="SCREAMING_SNAKE_CASE")]
 pub enum State {
     Open,
     Closed,
@@ -117,4 +133,21 @@ pub struct RateLimit {
 
 fn reset_time_from_secs(secs: u64) -> SystemTime {
     UNIX_EPOCH + Duration::from_secs(secs)
+}
+
+#[derive(Deserialize)]
+#[serde(untagged)]
+enum GqlResponse<T> {
+    Errors { errors: Vec<::json::Value> },
+    Data { data: T },
+}
+
+#[derive(Deserialize)]
+struct GqlRepository<T> {
+    repository: T,
+}
+
+#[derive(Deserialize)]
+struct GqlIssue {
+    issue: Issue,
 }
