@@ -12,7 +12,7 @@ pub struct Rfc {
     pub number: String,
     pub short_title: String,
     pub issues: Vec<github::Issue>,
-    state: State,
+    pub state: State,
     pub file_name: String,
 }
 

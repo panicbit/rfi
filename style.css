@@ -7,6 +7,7 @@ body {
 
 body > * {
     margin: 1rem !important;
+    max-width: 750px;
 }
 
 .vbar.OPEN    { border-left: #2cbe4e solid 1rem }
