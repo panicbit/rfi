@@ -1,0 +1,57 @@
+body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    align-items: center;
+}
+
+body > * {
+    margin: 1rem !important;
+    max-width: 750px;
+}
+
+.vbar.OPEN    { border-left: #2cbe4e solid 1rem }
+.vbar.UNKNOWN { border-left: #007cc4 solid 1rem }
+.vbar.CLOSED  { border-left: #cb2431 solid 1rem }
+
+.OPEN    table { background: #d4f2db }
+.UNKNOWN table { background: #cce5f3 }
+.CLOSED  table { background: #f2c8cb }
+
+table {
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 0.5rem;
+    border: #000 solid 1px;
+}
+
+.vbar.UNKNOWN table tr td:nth-child(3),
+.vbar.UNKNOWN table tr th:nth-child(3) {
+    display: none;
+}
+
+.issue.OPEN   > * { background: #2cbe4e }
+.issue.MERGED > * { background: #6f42c1 }
+.issue.CLOSED > * { background: #cb2431 }
+.issue > * {
+    border-radius: 3px;
+    padding: 0.25rem;
+    color: #fff;
+    display: inline-block;
+}
+
+ul.issues {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+ul.issues li {
+    margin-bottom: 0.25rem;
+}
+
+ul.issues li:last-child {
+    margin-bottom: 0;
+}
