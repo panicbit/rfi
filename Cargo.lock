@@ -5,6 +5,7 @@ dependencies = [
  "dotenv 0.10.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "error-chain 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "git2 0.6.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "handlebars 0.29.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "lazy_static 0.2.9 (registry+https://github.com/rust-lang/crates.io-index)",
  "matches 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "pulldown-cmark 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -284,6 +285,20 @@ dependencies = [
  "openssl-probe 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "openssl-sys 0.9.20 (registry+https://github.com/rust-lang/crates.io-index)",
  "url 1.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "handlebars"
+version = "0.29.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "lazy_static 0.2.9 (registry+https://github.com/rust-lang/crates.io-index)",
+ "log 0.3.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "pest 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "quick-error 1.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "regex 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde 1.0.16 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde_json 1.0.4 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -583,6 +598,11 @@ version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
+name = "pest"
+version = "0.3.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
 name = "phf"
 version = "0.7.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -630,6 +650,11 @@ dependencies = [
  "bitflags 0.9.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "getopts 0.2.15 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
+
+[[package]]
+name = "quick-error"
+version = "1.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "quote"
@@ -1099,6 +1124,7 @@ dependencies = [
 "checksum futures-cpupool 0.1.7 (registry+https://github.com/rust-lang/crates.io-index)" = "e86f49cc0d92fe1b97a5980ec32d56208272cbb00f15044ea9e2799dde766fdf"
 "checksum getopts 0.2.15 (registry+https://github.com/rust-lang/crates.io-index)" = "65922871abd2f101a2eb0eaebadc66668e54a87ad9c3dd82520b5f86ede5eff9"
 "checksum git2 0.6.8 (registry+https://github.com/rust-lang/crates.io-index)" = "0c1c0203d653f4140241da0c1375a404f0a397249ec818cd2076c6280c50f6fa"
+"checksum handlebars 0.29.1 (registry+https://github.com/rust-lang/crates.io-index)" = "fb04af2006ea09d985fef82b81e0eb25337e51b691c76403332378a53d521edc"
 "checksum httparse 1.2.3 (registry+https://github.com/rust-lang/crates.io-index)" = "af2f2dd97457e8fb1ae7c5a420db346af389926e36f43768b96f101546b04a07"
 "checksum hyper 0.11.6 (registry+https://github.com/rust-lang/crates.io-index)" = "1b45eac8b696d59491b079bd04fcb0f3488c0f6ed62dcb36bcfea8a543e9cdc3"
 "checksum hyper-tls 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)" = "9c81fa95203e2a6087242c38691a0210f23e9f3f8f944350bd676522132e2985"
@@ -1131,12 +1157,14 @@ dependencies = [
 "checksum openssl-probe 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)" = "d98df0270d404ccd3c050a41d579c52d1db15375168bb3471e04ec0f5f378daf"
 "checksum openssl-sys 0.9.20 (registry+https://github.com/rust-lang/crates.io-index)" = "0ad395f1cee51b64a8d07cc8063498dc7554db62d5f3ca87a67f4eed2791d0c8"
 "checksum percent-encoding 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)" = "de154f638187706bde41d9b4738748933d64e6b37bdbffc0b47a97d16a6ae356"
+"checksum pest 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)" = "0a6dda33d67c26f0aac90d324ab2eb7239c819fc7b2552fe9faa4fe88441edc8"
 "checksum phf 0.7.21 (registry+https://github.com/rust-lang/crates.io-index)" = "cb325642290f28ee14d8c6201159949a872f220c62af6e110a56ea914fbe42fc"
 "checksum phf_codegen 0.7.21 (registry+https://github.com/rust-lang/crates.io-index)" = "d62594c0bb54c464f633175d502038177e90309daf2e0158be42ed5f023ce88f"
 "checksum phf_generator 0.7.21 (registry+https://github.com/rust-lang/crates.io-index)" = "6b07ffcc532ccc85e3afc45865469bf5d9e4ef5bfcf9622e3cfe80c2d275ec03"
 "checksum phf_shared 0.7.21 (registry+https://github.com/rust-lang/crates.io-index)" = "07e24b0ca9643bdecd0632f2b3da6b1b89bbb0030e0b992afc1113b23a7bc2f2"
 "checksum pkg-config 0.3.9 (registry+https://github.com/rust-lang/crates.io-index)" = "3a8b4c6b8165cd1a1cd4b9b120978131389f64bdaf456435caa41e630edba903"
 "checksum pulldown-cmark 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "a656fdb8b6848f896df5e478a0eb9083681663e37dcb77dd16981ff65329fe8b"
+"checksum quick-error 1.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "eda5fe9b71976e62bc81b781206aaa076401769b2143379d3eb2118388babac4"
 "checksum quote 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)" = "7a6e920b65c65f10b2ae65c831a81a073a89edd28c7cce89475bff467ab4167a"
 "checksum rand 0.3.17 (registry+https://github.com/rust-lang/crates.io-index)" = "61efcbcd9fa8d8fbb07c84e34a8af18a1ff177b449689ad38a6e9457ecc7b2ae"
 "checksum redox_syscall 0.1.31 (registry+https://github.com/rust-lang/crates.io-index)" = "8dde11f18c108289bef24469638a04dce49da56084f2d50618b226e47eb04509"

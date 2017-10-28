@@ -7,12 +7,13 @@ use regex::Regex;
 use errors::*;
 use github::{self, State};
 
-#[derive(Debug,Serialize)]
+#[derive(Debug,Serialize,Clone)]
 pub struct Rfc {
     pub number: String,
     pub short_title: String,
     pub issues: Vec<github::Issue>,
-    pub state: State,
+    state: State,
+    pub file_name: String,
 }
 
 impl Rfc {
@@ -25,10 +26,15 @@ impl Rfc {
         let mut file = File::open(path)?;
         // `expect` should be fine if `File` opening succeeds
         let file_name = path.file_name().expect("file name").to_string_lossy().into_owned();
-        let caps = FILE_NAME_RE.captures(&file_name)
-            .ok_or_else(|| UnexpectedFileNameFormat(file_name.to_string()))?;
-        let number = caps[1].to_string();
-        let short_title = caps[2].to_string();
+        let number;
+        let short_title;
+        
+        {
+            let caps = FILE_NAME_RE.captures(&file_name)
+                .ok_or_else(|| UnexpectedFileNameFormat(file_name.to_string()))?;
+            number = caps[1].to_string();
+            short_title = caps[2].to_string();
+        }
 
         let mut markdown = String::new();
         file.read_to_string(&mut markdown)?;
@@ -48,7 +54,8 @@ impl Rfc {
             number,
             short_title,
             issues,
-            state
+            state,
+            file_name,
         })
     }
 
@@ -94,9 +101,21 @@ impl Rfc {
         .map(|i| github.get_issue(&i.owner, &i.repo, i.number).map_err(Error::from))
         .collect()
     }
+
+    pub fn is_unknown(&self) -> bool {
+        self.issues.is_empty()
+    }
+
+    pub fn is_open(&self) -> bool {
+        !self.is_unknown() && (self.state.is_open() || self.state.is_merged())
+    }
+
+    pub fn is_closed(&self) -> bool {
+        !self.is_unknown() && self.state.is_closed()
+    }
 }
 
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 pub struct Issue {
     pub owner: String,
     pub repo: String,

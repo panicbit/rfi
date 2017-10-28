@@ -1,0 +1,28 @@
+<table>
+    <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Issues</th>
+    </tr>
+    {{#each rfcs}}
+        <tr class="rfc {{state}}">
+            <td>{{number}}</td>
+            <td>
+                <a href="https://github.com/rust-lang/rfcs/blob/master/text/{{file_name}}">
+                    {{short_title}}
+                </a>
+            </td>
+            <td>
+                <ul class="issues">
+                    {{#each issues}}
+                        <li>
+                            <a href="{{url}}" class="issue {{state}}">
+                                <div>{{owner}}/{{repo}}#{{number}}</div>
+                            </a>
+                        </li>
+                    {{/each}}
+                </ul>
+            </td>
+        </tr>
+    {{/each}}
+</table>

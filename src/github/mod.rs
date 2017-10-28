@@ -77,7 +77,12 @@ impl Client {
 
         match gql_resp {
             GqlResponse::Errors { errors } => bail!(ErrorKind::Gql(errors)),
-            GqlResponse::Data { data } => Ok(data.repository.issue)
+            GqlResponse::Data { data } => {
+                let mut issue = data.repository.issue;
+                issue.owner = owner.into();
+                issue.repo = repo.into();
+                Ok(issue)
+            }
         }
     }
 
@@ -99,12 +104,16 @@ impl Client {
     // }
 }
 
-#[derive(Deserialize,Serialize,Debug)]
+#[derive(Deserialize,Serialize,Debug,Clone)]
 pub struct Issue {
     number: u32,
     title: String,
     state: State,
     url: String,
+    #[serde(skip_deserializing)]
+    owner: String,
+    #[serde(skip_deserializing)]
+    repo: String,
 }
 
 impl Issue {
@@ -123,6 +132,20 @@ pub enum State {
     Open,
     Closed,
     Merged,
+}
+
+impl State {
+    pub fn is_open(&self) -> bool {
+        matches!(*self, State::Open)
+    }
+
+    pub fn is_closed(&self) -> bool {
+        matches!(*self, State::Closed)
+    }
+
+    pub fn is_merged(&self) -> bool {
+        matches!(*self, State::Merged)
+    }
 }
 
 pub struct RateLimit {
