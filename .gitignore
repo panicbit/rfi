@@ -1,6 +1,6 @@
 *
 !index.html
 !style.css
-!app.js
+!*.js
 !data.json
 !.gitignore
