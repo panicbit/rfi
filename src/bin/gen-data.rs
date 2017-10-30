@@ -1,15 +1,15 @@
 extern crate rfi;
 extern crate dotenv;
-extern crate handlebars;
 extern crate chrono;
+extern crate serde_json as json;
 #[macro_use] extern crate serde_derive;
 
 use dotenv::dotenv;
 use rfi::*;
 use rfc::Rfc;
 use errors::*;
-use handlebars::Handlebars;
 use chrono::prelude::*;
+use std::io;
 
 #[derive(Serialize)]
 struct Data {
@@ -39,8 +39,6 @@ fn main() {
         .collect()
     };
 
-    let mut handlebars = Handlebars::new();
-
     let data = Data {
         open_rfcs: filtered_rfcs(Rfc::is_open),
         unknown_rfcs: filtered_rfcs(Rfc::is_unknown),
@@ -48,10 +46,8 @@ fn main() {
         last_updated,
     };
 
-    handlebars.register_template_string("index", include_str!("../../index.handlebars")).unwrap();
-    handlebars.register_partial("rfc_table", include_str!("../../rfc_table.handlebars")).unwrap();
-    
-    let index = handlebars.render("index", &data).unwrap();
+    let stdout = io::stdout();
+    let stdout = stdout.lock();
 
-    println!("{}", index);
+    json::to_writer(stdout, &data).unwrap();
 }
