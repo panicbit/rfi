@@ -3,4 +3,4 @@
 .env
 .vscode
 rfcs
-/index.html
+data.json

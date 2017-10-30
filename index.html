@@ -1,9 +1,9 @@
 <html>
     <head>
-        {{!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic"> --}}
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css">
-        {{!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.min.css"> --}}
         <link rel="stylesheet" href="style.css">
+        <script src="h.js"></script>
+        <script src="app.js"></script>
     </head>
 
     <body>
@@ -23,21 +23,15 @@
             I do not claim correctness of any kind. 
         </p>
 
-        <p>Last updated: {{last_updated}}</p>
+        <p>Last updated: <span class="last_updated">Loading…</span></p>
 
         <h2>RFCs with open issues</h2>
-        <div class="vbar OPEN">
-            {{>rfc_table rfcs = open_rfcs}}
-        </div>
+        <div class="vbar OPEN">Loading…</div>
 
         <h2>RFCs without issues</h2>
-        <div class="vbar UNKNOWN">
-            {{>rfc_table rfcs = unknown_rfcs}}
-        </div>
+        <div class="vbar UNKNOWN">Loading…</div>
 
         <h2>RFCs with all issues closed</h2>
-        <div class="vbar CLOSED">
-            {{>rfc_table rfcs = closed_rfcs}}
-        </div>
+        <div class="vbar CLOSED">Loading…</div>
     </body>
 </html>
